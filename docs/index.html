@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Daily Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0c10;
+    --surface:   #111318;
+    --border:    #1e2330;
+    --border2:   #2a3040;
+    --text:      #c8d0e0;
+    --muted:     #5a6478;
+    --accent:    #3d7fff;
+    --green:     #00c896;
+    --red:       #ff4d6a;
+    --yellow:    #f5c842;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'Noto Sans TC', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── 背景紋路 ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(61,127,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(61,127,255,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0 20px;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), #6a3fff);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .logo h1 span { color: var(--accent); }
+
+  .date-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .date-nav button {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: all .15s;
+  }
+  .date-nav button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .date-nav button:disabled { opacity: .3; cursor: default; }
+  #current-date { color: #fff; font-weight: 500; min-width: 105px; text-align: center; }
+
+  /* ── Market Section Labels ── */
+  .market-section { margin-top: 32px; }
+  .market-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .market-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .market-label .flag { font-size: 16px; }
+
+  /* ── Stock Cards Grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  .stock-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    transition: border-color .2s, transform .2s;
+    animation: fadeIn .3s ease both;
+  }
+  .stock-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .stock-id {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .stock-name {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .price-block { text-align: right; }
+  .price {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .currency { font-size: 11px; color: var(--muted); margin-right: 2px; }
+  .change {
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .up   { color: var(--green); }
+  .down { color: var(--red);   }
+  .flat { color: var(--muted); }
+
+  /* ── OHLV 列 ── */
+  .ohlv-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 14px;
+    padding: 10px;
+    background: rgba(255,255,255,.02);
+    border-radius: 8px;
+  }
+  .ohlv-item { text-align: center; }
+  .ohlv-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .ohlv-val   { font-family: var(--mono); font-size: 12px; color: var(--text); margin-top: 2px; }
+
+  /* ── 指標格 ── */
+  .indicators {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .ind-item {
+    background: rgba(255,255,255,.02);
+    border-radius: 7px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+  .ind-label { font-size: 10px; color: var(--muted); letter-spacing: .5px; }
+  .ind-val   { font-family: var(--mono); font-size: 13px; color: var(--text); margin-top: 2px; }
+  .ind-val.rsi-ob { color: var(--red);    }
+  .ind-val.rsi-os { color: var(--green);  }
+
+  /* ── 52週高低 ── */
+  .week52-bar {
+    margin-top: 4px;
+  }
+  .week52-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .week52-track {
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    position: relative;
+  }
+  .week52-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 2px;
+    transition: width .5s ease;
+  }
+  .week52-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255,255,255,.4);
+  }
+
+  /* ── Alert Tags ── */
+  .alert-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .alert-tag {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: .3px;
+  }
+  .alert-tag.rsi_overbought { background: rgba(255,77,106,.12); color: var(--red);    border: 1px solid rgba(255,77,106,.3); }
+  .alert-tag.rsi_oversold   { background: rgba(0,200,150,.12);  color: var(--green);  border: 1px solid rgba(0,200,150,.3);  }
+  .alert-tag.price_surge    { background: rgba(245,200,66,.12); color: var(--yellow); border: 1px solid rgba(245,200,66,.3); }
+  .alert-tag.high52         { background: rgba(61,127,255,.12); color: var(--accent); border: 1px solid rgba(61,127,255,.3); }
+  .alert-tag.low52          { background: rgba(255,77,106,.12); color: var(--red);    border: 1px solid rgba(255,77,106,.3); }
+
+  /* ── GPT 報告區塊 ── */
+  .report-section {
+    margin: 32px 0;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .report-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .report-badge {
+    background: rgba(61,127,255,.12);
+    border: 1px solid rgba(61,127,255,.3);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .report-placeholder {
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+  }
+  #gpt-content { font-size: 14px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+
+  /* ── Loading / Error ── */
+  .loading {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 40vh;
+    gap: 16px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(255,77,106,.08);
+    border: 1px solid rgba(255,77,106,.2);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  footer span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .indicators { grid-template-columns: repeat(3, 1fr); }
+    .ohlv-row   { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">📈</div>
+        <div>
+          <h1>Stock<span>.</span>Daily</h1>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">每日股票摘要儀表板</div>
+        </div>
+      </div>
+      <div class="date-nav">
+        <button id="btn-prev">‹ 前一天</button>
+        <span id="current-date">—</span>
+        <button id="btn-next">後一天 ›</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="loading" id="loading-state">
+      <div class="spinner"></div>
+      <span>載入中...</span>
+    </div>
+  </main>
+
+  <section class="report-section">
+    <div class="report-title">
+      AI 每日分析報告
+      <span class="report-badge">GPT-4o</span>
+    </div>
+    <div id="gpt-content">
+      <div class="report-placeholder">📝 AI 分析報告功能開放中，敬請期待</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>資料來源：TWSE / Yahoo Finance</span>
+    <span>每日 06:00 UTC+8 自動更新 · 僅供參考，不構成投資建議</span>
+  </footer>
+
+</div>
+
+<script>
+// ── 資料載入 ─────────────────────────────────────────────────────────────────
+const DATA_BASE = './data/';
+let dates = [];
+let currentIdx = 0;
+
+async function fetchJSON(url) {
+  const res = await fetch(url + '?t=' + Date.now());
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function init() {
+  try {
+    const idx = await fetchJSON(DATA_BASE + 'index.json');
+    dates = idx.dates || [];
+    if (!dates.length) throw new Error('尚無資料');
+    currentIdx = 0;
+    await renderDay(dates[currentIdx]);
+    updateNav();
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+async function renderDay(dateStr) {
+  document.getElementById('current-date').textContent = dateStr;
+  showLoading();
+  try {
+    const data = await fetchJSON(DATA_BASE + dateStr + '.json');
+    renderStocks(data.stocks || []);
+  } catch(e) {
+    showError('無法載入 ' + dateStr + ' 的資料');
+  }
+}
+
+// ── 導航 ──────────────────────────────────────────────────────────────────────
+function updateNav() {
+  document.getElementById('btn-prev').disabled = currentIdx >= dates.length - 1;
+  document.getElementById('btn-next').disabled = currentIdx <= 0;
+}
+
+document.getElementById('btn-prev').addEventListener('click', async () => {
+  if (currentIdx < dates.length - 1) {
+    currentIdx++;
+    await renderDay(dates[currentIdx]);
+    updateNav();
+  }
+});
+document.getElementById('btn-next').addEventListener('click', async () => {
+  if (currentIdx > 0) {
+    currentIdx--;
+    await renderDay(dates[currentIdx]);
+    updateNav();
+  }
+});
+
+// ── 渲染 ──────────────────────────────────────────────────────────────────────
+function showLoading() {
+  document.getElementById('main-content').innerHTML =
+    '<div class="loading"><div class="spinner"></div><span>載入中...</span></div>';
+}
+function showError(msg) {
+  document.getElementById('main-content').innerHTML =
+    `<div class="error-box">⚠ ${msg}</div>`;
+}
+
+function fmt(num, decimals=2) {
+  if (num == null) return '—';
+  return Number(num).toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+}
+function fmtVol(v) {
+  if (!v) return '—';
+  if (v >= 1e8) return (v/1e8).toFixed(1) + '億';
+  if (v >= 1e4) return (v/1e4).toFixed(0) + '萬';
+  return v.toLocaleString();
+}
+
+function changeClass(pct) {
+  if (pct > 0) return 'up';
+  if (pct < 0) return 'down';
+  return 'flat';
+}
+function changeArrow(pct) {
+  return pct > 0 ? '▲' : pct < 0 ? '▼' : '—';
+}
+
+const ALERT_LABELS = {
+  rsi_overbought: '超買 RSI>70',
+  rsi_oversold:   '超賣 RSI<30',
+  price_surge:    '急漲跌 ≥5%',
+  high52:         '52週新高',
+  low52:          '52週新低',
+};
+
+function renderStocks(stocks) {
+  if (!stocks.length) { showError('此日無資料'); return; }
+
+  const tw = stocks.filter(s => s.market === 'TW');
+  const us = stocks.filter(s => s.market === 'US');
+
+  let html = '';
+
+  if (tw.length) {
+    html += `
+      <div class="market-section">
+        <div class="market-label"><span class="flag">🇹🇼</span> 台股</div>
+        <div class="cards-grid">${tw.map(stockCard).join('')}</div>
+      </div>`;
+  }
+  if (us.length) {
+    html += `
+      <div class="market-section">
+        <div class="market-label"><span class="flag">🇺🇸</span> 美股</div>
+        <div class="cards-grid">${us.map(stockCard).join('')}</div>
+      </div>`;
+  }
+
+  document.getElementById('main-content').innerHTML = html;
+
+  // 動態寬度動畫
+  document.querySelectorAll('.week52-fill').forEach(el => {
+    const w = el.dataset.width;
+    setTimeout(() => { el.style.width = w + '%'; }, 50);
+  });
+}
+
+function stockCard(s) {
+  const ind = s.indicators || {};
+  const cls = changeClass(s.change_pct);
+  const curr = s.currency === 'TWD' ? 'NT$' : '$';
+
+  // 52週進度條
+  const range = (ind.high52 || 0) - (ind.low52 || 0);
+  const pos   = range > 0 ? ((s.price - ind.low52) / range * 100).toFixed(1) : 50;
+
+  // RSI class
+  let rsiCls = '';
+  if (ind.rsi14 >= 70) rsiCls = 'rsi-ob';
+  else if (ind.rsi14 <= 30) rsiCls = 'rsi-os';
+
+  // 警報標籤
+  const alertTags = (s.alerts || []).map(a =>
+    `<span class="alert-tag ${a.type}">${ALERT_LABELS[a.type] || a.type}</span>`
+  ).join('');
+
+  const priceDecimals = s.currency === 'TWD' ? 1 : 2;
+
+  return `
+  <div class="stock-card">
+    <div class="card-header">
+      <div>
+        <div class="stock-id">${s.symbol}</div>
+        <div class="stock-name">${s.name}</div>
+      </div>
+      <div class="price-block">
+        <div class="price"><span class="currency">${curr}</span>${fmt(s.price, priceDecimals)}</div>
+        <div class="change ${cls}">${changeArrow(s.change_pct)} ${fmt(s.change, priceDecimals)} (${s.change_pct > 0 ? '+' : ''}${fmt(s.change_pct)}%)</div>
+      </div>
+    </div>
+
+    <div class="ohlv-row">
+      <div class="ohlv-item"><div class="ohlv-label">開盤</div><div class="ohlv-val">${fmt(s.open, priceDecimals)}</div></div>
+      <div class="ohlv-item"><div class="ohlv-label">最高</div><div class="ohlv-val up">${fmt(s.high, priceDecimals)}</div></div>
+      <div class="ohlv-item"><div class="ohlv-label">最低</div><div class="ohlv-val down">${fmt(s.low, priceDecimals)}</div></div>
+      <div class="ohlv-item"><div class="ohlv-label">成交量</div><div class="ohlv-val">${fmtVol(s.volume)}</div></div>
+    </div>
+
+    <div class="indicators">
+      <div class="ind-item"><div class="ind-label">RSI 14</div><div class="ind-val ${rsiCls}">${ind.rsi14 ?? '—'}</div></div>
+      <div class="ind-item"><div class="ind-label">SMA 7</div><div class="ind-val">${fmt(ind.sma7, priceDecimals)}</div></div>
+      <div class="ind-item"><div class="ind-label">SMA 20</div><div class="ind-val">${fmt(ind.sma20, priceDecimals)}</div></div>
+      <div class="ind-item"><div class="ind-label">EMA 12</div><div class="ind-val">${fmt(ind.ema12, priceDecimals)}</div></div>
+      <div class="ind-item"><div class="ind-label">EMA 26</div><div class="ind-val">${fmt(ind.ema26, priceDecimals)}</div></div>
+      <div class="ind-item"><div class="ind-label">高低差</div><div class="ind-val">${range > 0 ? fmt(range, priceDecimals) : '—'}</div></div>
+    </div>
+
+    <div class="week52-bar">
+      <div class="week52-labels">
+        <span>52W 低 ${fmt(ind.low52, priceDecimals)}</span>
+        <span>${fmt(ind.high52, priceDecimals)} 52W 高</span>
+      </div>
+      <div class="week52-track">
+        <div class="week52-fill" style="width:0%" data-width="${pos}"></div>
+        <div class="week52-dot" style="left:${pos}%"></div>
+      </div>
+    </div>
+
+    ${alertTags ? `<div class="alert-tags">${alertTags}</div>` : ''}
+  </div>`;
+}
+
+init();
+</script>
+</body>
+</html>
