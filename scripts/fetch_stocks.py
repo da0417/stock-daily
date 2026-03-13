@@ -115,47 +115,54 @@ def detect_alerts(symbol: str, name: str, price: float, change_pct: float,
 
 # ── 台股資料 (TWSE) ──────────────────────────────────────────────────────────
 
-def fetch_twse_history(symbol: str) -> pd.Series | None:
-    """
-    從 TWSE 抓近一年日收盤資料，回傳 pd.Series (index=date, values=close)
-    """
+def _fetch_twse_month(symbol: str, yyyymm: str) -> list:
+    """抓單一月份的收盤紀錄，回傳 [(date_str, close), ...]"""
     try:
         url = (
             f"https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
-            f"?stockNo={symbol}&response=json"
+            f"?stockNo={symbol}&date={yyyymm}01&response=json"
         )
         resp = requests.get(url, timeout=15)
         data = resp.json()
         if data.get("stat") != "OK":
-            return None
-
-        rows = data.get("data", [])
+            return []
         records = []
-        for row in rows:
-            # 民國年轉西元
+        for row in data.get("data", []):
             date_parts = row[0].replace("/", "-").split("-")
             year = int(date_parts[0]) + 1911
             date_str = f"{year}-{date_parts[1]}-{date_parts[2]}"
             close_str = row[6].replace(",", "")
             try:
-                close = float(close_str)
-                records.append((date_str, close))
+                records.append((date_str, float(close_str)))
             except ValueError:
                 continue
-
-        if not records:
-            return None
-
-        series = pd.Series(
-            {r[0]: r[1] for r in records},
-            dtype=float,
-        )
-        series.index = pd.to_datetime(series.index)
-        return series.sort_index()
-
+        return records
     except Exception:
-        traceback.print_exc()
+        return []
+
+
+def fetch_twse_history(symbol: str) -> pd.Series | None:
+    """
+    抓最近 3 個月的台股日收盤，確保有足夠資料點計算指標。
+    """
+    records = []
+    now = datetime.utcnow()
+    for i in range(3):                          # 本月、上月、上上月
+        ym = (now.replace(day=1) - timedelta(days=1) * (i * 28))
+        yyyymm = ym.strftime("%Y%m")
+        month_data = _fetch_twse_month(symbol, yyyymm)
+        records.extend(month_data)
+        time.sleep(0.4)                         # 避免 rate limit
+
+    if not records:
         return None
+
+    series = pd.Series(
+        {r[0]: r[1] for r in records},
+        dtype=float,
+    )
+    series.index = pd.to_datetime(series.index)
+    return series.sort_index()
 
 
 def fetch_twse_quote(symbol: str) -> dict | None:
@@ -197,7 +204,7 @@ def process_taiwan_stock(symbol: str, name: str) -> dict | None:
     time.sleep(0.5)  # 避免 rate limit
 
     history = fetch_twse_history(symbol)
-    if history is None or len(history) < 20:
+    if history is None or len(history) < 5:
         print(f"    ⚠ 歷史資料不足，跳過")
         return None
 
