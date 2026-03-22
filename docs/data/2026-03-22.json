@@ -48,6 +48,54 @@
       },
       "alerts": [],
       "updated_at": "2026-03-22"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "market": "US",
+      "currency": "USD",
+      "price": 172.93,
+      "change": -5.63,
+      "change_pct": -3.15,
+      "volume": 241323528,
+      "open": 178.0,
+      "high": 178.26,
+      "low": 171.73,
+      "indicators": {
+        "sma7": 180.06,
+        "sma20": 183.13,
+        "ema12": 180.65,
+        "ema26": 182.64,
+        "rsi14": 37.61,
+        "high52": 207.02,
+        "low52": 94.29
+      },
+      "alerts": [],
+      "updated_at": "2026-03-22"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "market": "US",
+      "currency": "USD",
+      "price": 367.96,
+      "change": -12.34,
+      "change_pct": -3.24,
+      "volume": 78628603,
+      "open": 379.39,
+      "high": 379.89,
+      "low": 364.46,
+      "indicators": {
+        "sma7": 388.87,
+        "sma20": 398.47,
+        "ema12": 391.72,
+        "ema26": 401.0,
+        "rsi14": 32.44,
+        "high52": 489.88,
+        "low52": 221.86
+      },
+      "alerts": [],
+      "updated_at": "2026-03-22"
     }
   ]
 }
