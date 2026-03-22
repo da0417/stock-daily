@@ -6,8 +6,9 @@
   1. 今日成交量 > 昨日成交量 × 2
   2. 今日成交量 > 5 日均量
   3. 均線多頭排列 (5MA > 10MA > 20MA > 60MA)
-  4. 股價 > 23 日均線
+  4. 股價 >= 23 日EMA均線
   5. 股價 > 50 元
+  6. 60 日平均成交金額 > 1,000,000 元
 
 資料來源：FinMind API（TaiwanStockPrice / TaiwanStockInfo）
 分析：Claude claude-sonnet-4-6 API
@@ -34,7 +35,7 @@ DATA_DIR   = Path(__file__).parent.parent / "docs" / "data"
 CACHE_FILE = DATA_DIR / "screener_cache.json"
 TODAY_STR  = datetime.utcnow().strftime("%Y-%m-%d")
 
-CACHE_DAYS   = 65   # 保留天數（計算 60MA 最少需要 60 天）
+CACHE_DAYS   = 95   # 保留天數（60MA 需要 60 交易日 ≈ 85 日曆天，加 buffer）
 FINMIND_URL  = "https://api.finmindtrade.com/api/v4/data"
 
 # ── FinMind 資料抓取 ──────────────────────────────────────────────────────────
@@ -237,7 +238,7 @@ def screen_stocks(stocks: dict) -> list[dict]:
     results = []
 
     for sid, records in stocks.items():
-        if len(records) < 62:  # 至少 62 筆才能計算 60MA + 昨日量
+        if len(records) < 50:  # 至少 50 筆（快取累積後自然符合）
             continue
 
         closes  = pd.Series([r["close"]  for r in records], dtype=float)
@@ -254,13 +255,17 @@ def screen_stocks(stocks: dict) -> list[dict]:
         ma23 = closes.tail(23).mean()
         ma60 = closes.tail(60).mean()
 
+        # 60 日平均成交金額（close × volume 近似，單位：元）
+        value_60ma = float((closes.tail(60) * volumes.tail(60)).mean())
+
         cond1 = vol_today > vol_yesterday * 2
         cond2 = vol_today > vol_5ma
         cond3 = (ma5 > ma10) and (ma10 > ma20) and (ma20 > ma60)
         cond4 = close_today > ma23
         cond5 = close_today > 50
+        cond6 = value_60ma > 1_000_000   # 60 日均成交金額 > 100 萬元
 
-        if cond1 and cond2 and cond3 and cond4 and cond5:
+        if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
             vol_ratio = round(vol_today / vol_yesterday, 2) if vol_yesterday > 0 else 0
             results.append({
                 "stock_id":   sid,
@@ -300,8 +305,10 @@ def analyze_with_claude(results: list[dict], stock_names: dict) -> str:
     prompt = (
         f"以下是 {TODAY_STR} 台股盤後，依爆量多頭排列條件選出的個股（前10名）：\n\n"
         + "\n".join(lines)
-        + "\n\n請用繁體中文，針對每支股票簡要說明（2~3句）：均線型態、量能意義、短期操作注意事項。"
-        "回覆控制在 600 字以內，使用條列格式，每股一條。"
+        + "\n\n請用繁體中文分析，格式規定如下（嚴格遵守）："
+        "\n每支股票一行，格式：代號 名稱｜一句話說量能意義｜一句話說短線注意"
+        "\n例如：2330 台積電｜量爆3x突破整理區，籌碼換手積極｜留意920支撐，失守減碼"
+        "\n不要使用 markdown，不要分段，不要標題，直接列出10行即可。"
     )
 
     try:
@@ -376,7 +383,7 @@ def format_and_send(results: list[dict], analysis: str, stock_names: dict):
 
     if analysis:
         time.sleep(0.5)
-        ai_msg = f"🤖 <b>Claude 分析（前10名）</b>\n\n{analysis}"
+        ai_msg = f"🤖 <b>Claude 快析</b>\n\n{analysis}"
         if len(ai_msg) > 4000:
             ai_msg = ai_msg[:4000] + "..."
         send_telegram(ai_msg)
