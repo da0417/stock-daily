@@ -3,12 +3,14 @@
 台股全市場選股器
 
 篩選條件：
-  1. 今日成交量 > 昨日成交量 × 2
-  2. 今日成交量 > 5 日均量
-  3. 均線多頭排列 (5MA > 10MA > 20MA > 60MA)
-  4. 股價 >= 23 日EMA均線
-  5. 股價 > 50 元
-  6. 60 日平均成交金額 > 1,000,000 元
+  1. 股價 > MA240（長線多頭）
+  2. MA20 > MA60 > MA120（中期均線多頭排列）
+  3. K 值黃金交叉 + K < 70（KD 動能確認，非超買）
+  4. MACD 黃金交叉（DIF 上穿 Signal）
+  5. RSI 50–75（有動能，未超買）
+  6. 成交量 > 20 日均量 × 1.5（放量確認）
+  7. 股價 > 50 元
+  8. 60 日平均成交金額 > 1,000,000 元（流動性門檻）
 
 資料來源：FinMind API（TaiwanStockPrice / TaiwanStockInfo）
 分析：Claude claude-sonnet-4-6 API
@@ -19,6 +21,7 @@ import json
 import os
 import time
 import requests
+import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -35,7 +38,7 @@ DATA_DIR   = Path(__file__).parent.parent / "docs" / "data"
 CACHE_FILE = DATA_DIR / "screener_cache.json"
 TODAY_STR  = datetime.utcnow().strftime("%Y-%m-%d")
 
-CACHE_DAYS   = 95   # 保留天數（60MA 需要 60 交易日 ≈ 85 日曆天，加 buffer）
+CACHE_DAYS   = 360  # 保留天數（MA240 需要 240 交易日 ≈ 340 日曆天，加 buffer）
 FINMIND_URL  = "https://api.finmindtrade.com/api/v4/data"
 
 # ── FinMind 資料抓取 ──────────────────────────────────────────────────────────
@@ -81,11 +84,13 @@ def fetch_prices_range(start_date: str, end_date: str) -> pd.DataFrame:
             return df
         df["date"]           = pd.to_datetime(df["date"])
         df["close"]          = pd.to_numeric(df["close"],          errors="coerce")
+        df["max"]            = pd.to_numeric(df["max"],            errors="coerce")
+        df["min"]            = pd.to_numeric(df["min"],            errors="coerce")
         df["Trading_Volume"] = pd.to_numeric(df["Trading_Volume"], errors="coerce")
         # 過濾無效資料
         df = df[(df["close"] > 0) & (df["Trading_Volume"] > 0)]
-        return df[["stock_id", "date", "close", "Trading_Volume"]].rename(
-            columns={"Trading_Volume": "volume"}
+        return df[["stock_id", "date", "close", "max", "min", "Trading_Volume"]].rename(
+            columns={"Trading_Volume": "volume", "max": "high", "min": "low"}
         )
     except Exception:
         traceback.print_exc()
@@ -123,6 +128,8 @@ def _records_from_df(df: pd.DataFrame, cutoff: str) -> dict:
             {
                 "date":   row.date.strftime("%Y-%m-%d"),
                 "close":  float(row.close),
+                "high":   float(row.high),
+                "low":    float(row.low),
                 "volume": int(row.volume),
             }
             for row in group.itertuples()
@@ -147,7 +154,7 @@ def _trading_days(start_date: str, end_date: str) -> list[str]:
 
 def bootstrap_cache() -> dict:
     """首次執行：逐日抓 CACHE_DAYS 天的歷史快取（每日一次 API 呼叫）"""
-    print("  首次執行，建立初始快取（約需 1~3 分鐘）...")
+    print("  首次執行，建立初始快取（約需 5~10 分鐘，請耐心等候）...")
     cutoff     = (datetime.utcnow() - timedelta(days=CACHE_DAYS)).strftime("%Y-%m-%d")
     start_date = cutoff
     end_date   = TODAY_STR
@@ -199,6 +206,8 @@ def update_cache(existing: dict) -> dict:
             {
                 "date":   row.date.strftime("%Y-%m-%d"),
                 "close":  float(row.close),
+                "high":   float(row.high),
+                "low":    float(row.low),
                 "volume": int(row.volume),
             }
             for row in group.itertuples()
@@ -222,66 +231,108 @@ def update_cache(existing: dict) -> dict:
     save_cache(existing)
     return existing
 
+# ── 技術指標計算 ──────────────────────────────────────────────────────────────
+
+def _calc_rsi(closes: pd.Series, period: int = 14) -> float:
+    delta = closes.diff().dropna()
+    gain  = delta.clip(lower=0).rolling(period).mean()
+    loss  = (-delta.clip(upper=0)).rolling(period).mean()
+    rs    = gain / loss.replace(0, np.nan)
+    rsi   = 100 - (100 / (1 + rs))
+    return float(rsi.iloc[-1]) if len(rsi) > 0 and not pd.isna(rsi.iloc[-1]) else 50.0
+
+
+def _calc_kd(highs: pd.Series, lows: pd.Series, closes: pd.Series, n: int = 9) -> tuple:
+    """回傳 (K今日, D今日, K昨日, D昨日)"""
+    k, d = 50.0, 50.0
+    prev_k, prev_d = 50.0, 50.0
+    for i in range(len(closes)):
+        if i < n - 1:
+            continue
+        h = highs.iloc[i - n + 1:i + 1].max()
+        l = lows.iloc[i - n + 1:i + 1].min()
+        rsv = (closes.iloc[i] - l) / (h - l) * 100 if h != l else 50.0
+        prev_k, prev_d = k, d
+        k = 2 / 3 * k + 1 / 3 * rsv
+        d = 2 / 3 * d + 1 / 3 * k
+    return k, d, prev_k, prev_d
+
+
+def _calc_macd(closes: pd.Series) -> tuple:
+    """回傳 (DIF今日, Signal今日, DIF昨日, Signal昨日)"""
+    ema12 = closes.ewm(span=12, adjust=False).mean()
+    ema26 = closes.ewm(span=26, adjust=False).mean()
+    dif   = ema12 - ema26
+    sig   = dif.ewm(span=9, adjust=False).mean()
+    return float(dif.iloc[-1]), float(sig.iloc[-1]), float(dif.iloc[-2]), float(sig.iloc[-2])
+
+
 # ── 篩選邏輯 ──────────────────────────────────────────────────────────────────
 
 def screen_stocks(stocks: dict) -> list[dict]:
     """
-    套用 5 條篩選條件，回傳符合個股清單（依量倍率排序）。
+    套用 8 條篩選條件，回傳符合個股清單（依成交量 vs 20MA 倍率排序）。
 
     篩選條件：
-      1. 今日成交量 > 昨日成交量 × 2
-      2. 今日成交量 > 5 日均量（不含今日）
-      3. 均線多頭排列：5MA > 10MA > 20MA > 60MA
-      4. 股價 > 23MA
-      5. 股價 > 50 元
+      1. 股價 > MA240
+      2. MA20 > MA60 > MA120
+      3. KD 黃金交叉 + K < 70
+      4. MACD 黃金交叉
+      5. RSI 50–75
+      6. 成交量 > 20 日均量 × 1.5
+      7. 股價 > 50 元
+      8. 60 日平均成交金額 > 1,000,000 元
     """
     results = []
 
     for sid, records in stocks.items():
-        if len(records) < 50:  # 至少 50 筆（快取累積後自然符合）
+        if len(records) < 245:  # 需要 240 筆才能算 MA240
             continue
 
-        closes  = pd.Series([r["close"]  for r in records], dtype=float)
-        volumes = pd.Series([r["volume"] for r in records], dtype=float)
+        closes  = pd.Series([r["close"]            for r in records], dtype=float)
+        highs   = pd.Series([r.get("high", r["close"]) for r in records], dtype=float)
+        lows    = pd.Series([r.get("low",  r["close"]) for r in records], dtype=float)
+        volumes = pd.Series([r["volume"]           for r in records], dtype=float)
 
-        close_today   = closes.iloc[-1]
-        vol_today     = volumes.iloc[-1]
-        vol_yesterday = volumes.iloc[-2]
-        vol_5ma       = volumes.iloc[-6:-1].mean()  # 前 5 日均量（不含今日）
+        close_today = closes.iloc[-1]
+        vol_today   = volumes.iloc[-1]
 
-        ma5  = closes.tail(5).mean()
-        ma10 = closes.tail(10).mean()
-        ma20 = closes.tail(20).mean()
-        ma23 = closes.tail(23).mean()
-        ma60 = closes.tail(60).mean()
-
-        # 60 日平均成交金額（close × volume 近似，單位：元）
+        ma20  = float(closes.tail(20).mean())
+        ma60  = float(closes.tail(60).mean())
+        ma120 = float(closes.tail(120).mean())
+        ma240 = float(closes.tail(240).mean())
+        vol_20ma   = float(volumes.tail(20).mean())
         value_60ma = float((closes.tail(60) * volumes.tail(60)).mean())
 
-        cond1 = vol_today > vol_yesterday * 2
-        cond2 = vol_today > vol_5ma
-        cond3 = (ma5 > ma10) and (ma10 > ma20) and (ma20 > ma60)
-        cond4 = close_today > ma23
-        cond5 = close_today > 50
-        cond6 = value_60ma > 1_000_000   # 60 日均成交金額 > 100 萬元
+        rsi = _calc_rsi(closes)
+        k_today, d_today, k_prev, d_prev = _calc_kd(highs, lows, closes)
+        dif_today, sig_today, dif_prev, sig_prev = _calc_macd(closes)
 
-        if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
-            vol_ratio = round(vol_today / vol_yesterday, 2) if vol_yesterday > 0 else 0
+        cond1 = close_today > ma240
+        cond2 = (ma20 > ma60) and (ma60 > ma120)
+        cond3 = (k_today > d_today) and (k_prev < d_prev) and (k_today < 70)
+        cond4 = (dif_today > sig_today) and (dif_prev <= sig_prev)
+        cond5 = 50 <= rsi <= 75
+        cond6 = vol_today > vol_20ma * 1.5
+        cond7 = close_today > 50
+        cond8 = value_60ma > 1_000_000
+
+        if cond1 and cond2 and cond3 and cond4 and cond5 and cond6 and cond7 and cond8:
             results.append({
-                "stock_id":   sid,
-                "close":      round(close_today, 2),
-                "vol_today":  int(vol_today),
-                "vol_ratio":  vol_ratio,
-                "vol_vs_5ma": round(vol_today / vol_5ma, 2) if vol_5ma > 0 else 0,
-                "ma5":        round(float(ma5),  2),
-                "ma10":       round(float(ma10), 2),
-                "ma20":       round(float(ma20), 2),
-                "ma23":       round(float(ma23), 2),
-                "ma60":       round(float(ma60), 2),
+                "stock_id":    sid,
+                "close":       round(close_today, 2),
+                "ma20":        round(ma20,  2),
+                "ma60":        round(ma60,  2),
+                "ma120":       round(ma120, 2),
+                "ma240":       round(ma240, 2),
+                "rsi":         round(rsi, 1),
+                "k":           round(k_today, 1),
+                "d":           round(d_today, 1),
+                "vol_vs_20ma": round(vol_today / vol_20ma, 2) if vol_20ma > 0 else 0,
                 "latest_date": records[-1]["date"],
             })
 
-    results.sort(key=lambda x: x["vol_ratio"], reverse=True)
+    results.sort(key=lambda x: x["vol_vs_20ma"], reverse=True)
     return results
 
 # ── Claude 分析 ───────────────────────────────────────────────────────────────
@@ -297,17 +348,16 @@ def analyze_with_claude(results: list[dict], stock_names: dict) -> str:
         name = stock_names.get(r["stock_id"], "")
         lines.append(
             f"- {r['stock_id']} {name}: 收{r['close']} "
-            f"量倍率{r['vol_ratio']}x(vs昨日) / {r['vol_vs_5ma']}x(vs5MA) "
-            f"| 5MA:{r['ma5']} 10MA:{r['ma10']} 20MA:{r['ma20']} "
-            f"23MA:{r['ma23']} 60MA:{r['ma60']}"
+            f"量{r['vol_vs_20ma']}x(vs20MA) RSI:{r['rsi']} K:{r['k']} D:{r['d']} "
+            f"| 20MA:{r['ma20']} 60MA:{r['ma60']} 120MA:{r['ma120']} 240MA:{r['ma240']}"
         )
 
     prompt = (
-        f"以下是 {TODAY_STR} 台股盤後，依爆量多頭排列條件選出的個股（前10名）：\n\n"
+        f"以下是 {TODAY_STR} 台股盤後，依趨勢+動能條件選出的個股（前10名）：\n\n"
         + "\n".join(lines)
         + "\n\n請用繁體中文分析，格式規定如下（嚴格遵守）："
-        "\n每支股票一行，格式：代號 名稱｜一句話說量能意義｜一句話說短線注意"
-        "\n例如：2330 台積電｜量爆3x突破整理區，籌碼換手積極｜留意920支撐，失守減碼"
+        "\n每支股票一行，格式：代號 名稱｜KD/MACD交叉意義｜短線操作注意"
+        "\n例如：2330 台積電｜KD低檔交叉、MACD翻多，動能啟動｜留意920支撐，失守減碼"
         "\n不要使用 markdown，不要分段，不要標題，直接列出10行即可。"
     )
 
@@ -371,12 +421,12 @@ def format_and_send(results: list[dict], analysis: str, stock_names: dict):
         name = stock_names.get(r["stock_id"], "")
         lines.append(
             f"{i}. <b>{r['stock_id']} {name}</b>  "
-            f"收:{r['close']}  量:{r['vol_ratio']}x  "
-            f"5MA:{r['ma5']}  20MA:{r['ma20']}"
+            f"收:{r['close']}  量:{r['vol_vs_20ma']}x  "
+            f"RSI:{r['rsi']}  K:{r['k']}  20MA:{r['ma20']}"
         )
 
     lines.append(
-        "\n⚙️ <i>篩選條件：量>昨日2x + >5日均量 + 多頭排列(5>10>20>60MA) + >23MA + 股價>50</i>"
+        "\n⚙️ <i>條件：>MA240 + MA20>60>120 + KD黃金交叉(K<70) + MACD黃金交叉 + RSI50-75 + 量>20MA×1.5 + 股價>50</i>"
     )
 
     send_telegram("\n".join(lines))
