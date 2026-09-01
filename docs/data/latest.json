@@ -6,19 +6,19 @@
       "name": "台積電",
       "market": "TW",
       "currency": "TWD",
-      "price": 2405.0,
-      "change": -15.0,
-      "change_pct": -0.62,
+      "price": 2440.0,
+      "change": 35.0,
+      "change_pct": 1.46,
       "volume": 0,
-      "open": 2405.0,
-      "high": 2405.0,
-      "low": 2405.0,
+      "open": 2440.0,
+      "high": 2440.0,
+      "low": 2440.0,
       "indicators": {
-        "sma7": 2405.0,
-        "sma20": 2391.0,
-        "ema12": 2398.39,
-        "ema26": 2393.97,
-        "rsi14": 51.67,
+        "sma7": 2409.29,
+        "sma20": 2397.0,
+        "ema12": 2404.79,
+        "ema26": 2397.38,
+        "rsi14": 53.97,
         "high52": 2505.0,
         "low52": 2200.0
       },
@@ -30,81 +30,23 @@
       "name": "欣興",
       "market": "TW",
       "currency": "TWD",
-      "price": 999.0,
-      "change": -111.0,
-      "change_pct": -10.0,
+      "price": 971.0,
+      "change": -28.0,
+      "change_pct": -2.8,
       "volume": 0,
-      "open": 999.0,
-      "high": 999.0,
-      "low": 999.0,
+      "open": 971.0,
+      "high": 971.0,
+      "low": 971.0,
       "indicators": {
-        "sma7": 1100.57,
-        "sma20": 1053.2,
-        "ema12": 1078.89,
-        "ema26": 1030.34,
-        "rsi14": 50.66,
+        "sma7": 1084.29,
+        "sma20": 1055.55,
+        "ema12": 1062.3,
+        "ema26": 1025.95,
+        "rsi14": 47.36,
         "high52": 1180.0,
         "low52": 688.0
       },
-      "alerts": [
-        {
-          "type": "price_surge",
-          "msg": "💥 急跌 3037 (欣興) 單日 -10.00%，現價 999.0"
-        }
-      ],
-      "updated_at": "2026-09-01"
-    },
-    {
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "market": "US",
-      "currency": "USD",
-      "price": 220.78,
-      "change": 3.23,
-      "change_pct": 1.48,
-      "volume": 124033835,
-      "open": 218.86,
-      "high": 221.29,
-      "low": 216.21,
-      "indicators": {
-        "sma7": 216.03,
-        "sma20": 218.75,
-        "ema12": 217.55,
-        "ema26": 215.07,
-        "rsi14": 52.54,
-        "high52": 235.47,
-        "low52": 164.98
-      },
       "alerts": [],
-      "updated_at": "2026-09-01"
-    },
-    {
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "market": "US",
-      "currency": "USD",
-      "price": 367.95,
-      "change": 19.2,
-      "change_pct": 5.51,
-      "volume": 61157428,
-      "open": 347.15,
-      "high": 368.92,
-      "low": 347.15,
-      "indicators": {
-        "sma7": 354.2,
-        "sma20": 341.11,
-        "ema12": 349.67,
-        "ema26": 348.17,
-        "rsi14": 64.98,
-        "high52": 489.88,
-        "low52": 298.32
-      },
-      "alerts": [
-        {
-          "type": "price_surge",
-          "msg": "🚀 急漲 TSLA (Tesla) 單日 +5.51%，現價 367.95"
-        }
-      ],
       "updated_at": "2026-09-01"
     }
   ]
