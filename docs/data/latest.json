@@ -1,63 +1,58 @@
 {
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "stocks": [
     {
       "symbol": "2330",
       "name": "台積電",
       "market": "TW",
       "currency": "TWD",
-      "price": 2550.0,
-      "change": -35.0,
-      "change_pct": -1.35,
+      "price": 2540.0,
+      "change": -10.0,
+      "change_pct": -0.39,
       "volume": 0,
-      "open": 2550.0,
-      "high": 2550.0,
-      "low": 2550.0,
+      "open": 2540.0,
+      "high": 2540.0,
+      "low": 2540.0,
       "indicators": {
-        "sma7": 2540.71,
-        "sma20": 2476.5,
-        "ema12": 2519.9,
-        "ema26": 2479.46,
-        "rsi14": 74.29,
+        "sma7": 2549.29,
+        "sma20": 2480.25,
+        "ema12": 2523.0,
+        "ema26": 2483.94,
+        "rsi14": 68.25,
         "high52": 2585.0,
         "low52": 2320.0
       },
-      "alerts": [
-        {
-          "type": "rsi_overbought",
-          "msg": "📈 超買訊號 2330 (台積電) RSI=74.3，留意回檔風險"
-        }
-      ],
-      "updated_at": "2026-10-12"
+      "alerts": [],
+      "updated_at": "2026-10-13"
     },
     {
       "symbol": "3037",
       "name": "欣興",
       "market": "TW",
       "currency": "TWD",
-      "price": 1270.0,
-      "change": -35.0,
-      "change_pct": -2.68,
+      "price": 1255.0,
+      "change": -15.0,
+      "change_pct": -1.18,
       "volume": 0,
-      "open": 1270.0,
-      "high": 1270.0,
-      "low": 1270.0,
+      "open": 1255.0,
+      "high": 1255.0,
+      "low": 1255.0,
       "indicators": {
-        "sma7": 1272.14,
-        "sma20": 1116.1,
-        "ema12": 1215.29,
-        "ema26": 1134.51,
-        "rsi14": 80.84,
+        "sma7": 1283.57,
+        "sma20": 1129.2,
+        "ema12": 1221.4,
+        "ema26": 1143.43,
+        "rsi14": 81.82,
         "high52": 1325.0,
         "low52": 865.0
       },
       "alerts": [
         {
           "type": "rsi_overbought",
-          "msg": "📈 超買訊號 3037 (欣興) RSI=80.8，留意回檔風險"
+          "msg": "📈 超買訊號 3037 (欣興) RSI=81.8，留意回檔風險"
         }
       ],
-      "updated_at": "2026-10-12"
+      "updated_at": "2026-10-13"
     }
   ]
 }
