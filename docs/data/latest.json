@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-14",
+  "date": "2026-10-15",
   "stocks": [
     {
       "symbol": "2330",
@@ -7,52 +7,47 @@
       "market": "TW",
       "currency": "TWD",
       "price": 2490.0,
-      "change": -50.0,
-      "change_pct": -1.97,
+      "change": 0.0,
+      "change_pct": 0.0,
       "volume": 0,
       "open": 2490.0,
       "high": 2490.0,
       "low": 2490.0,
       "indicators": {
-        "sma7": 2546.43,
-        "sma20": 2482.25,
-        "ema12": 2517.92,
-        "ema26": 2484.39,
-        "rsi14": 54.55,
+        "sma7": 2545.0,
+        "sma20": 2486.25,
+        "ema12": 2513.62,
+        "ema26": 2484.81,
+        "rsi14": 51.61,
         "high52": 2585.0,
         "low52": 2320.0
       },
       "alerts": [],
-      "updated_at": "2026-10-14"
+      "updated_at": "2026-10-15"
     },
     {
       "symbol": "3037",
       "name": "欣興",
       "market": "TW",
       "currency": "TWD",
-      "price": 1180.0,
-      "change": -75.0,
-      "change_pct": -5.98,
+      "price": 1185.0,
+      "change": 5.0,
+      "change_pct": 0.42,
       "volume": 0,
-      "open": 1180.0,
-      "high": 1180.0,
-      "low": 1180.0,
+      "open": 1185.0,
+      "high": 1185.0,
+      "low": 1185.0,
       "indicators": {
-        "sma7": 1278.57,
-        "sma20": 1138.5,
-        "ema12": 1215.03,
-        "ema26": 1146.14,
-        "rsi14": 68.81,
+        "sma7": 1261.43,
+        "sma20": 1148.9,
+        "ema12": 1210.41,
+        "ema26": 1149.02,
+        "rsi14": 66.67,
         "high52": 1325.0,
         "low52": 865.0
       },
-      "alerts": [
-        {
-          "type": "price_surge",
-          "msg": "💥 急跌 3037 (欣興) 單日 -5.98%，現價 1180.0"
-        }
-      ],
-      "updated_at": "2026-10-14"
+      "alerts": [],
+      "updated_at": "2026-10-15"
     }
   ]
 }
