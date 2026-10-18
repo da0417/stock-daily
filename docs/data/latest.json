@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "stocks": [
     {
       "symbol": "2330",
@@ -9,9 +9,9 @@
       "price": 2420.0,
       "change": -20.0,
       "change_pct": -0.82,
-      "volume": 33257,
-      "open": 2430.0,
-      "high": 2445.0,
+      "volume": 0,
+      "open": 2420.0,
+      "high": 2420.0,
       "low": 2420.0,
       "indicators": {
         "sma7": 2502.14,
@@ -23,7 +23,7 @@
         "low52": 2320.0
       },
       "alerts": [],
-      "updated_at": "2026-10-17"
+      "updated_at": "2026-10-18"
     },
     {
       "symbol": "3037",
@@ -33,10 +33,10 @@
       "price": 1090.0,
       "change": 15.0,
       "change_pct": 1.4,
-      "volume": 14483,
-      "open": 1095.0,
-      "high": 1125.0,
-      "low": 1085.0,
+      "volume": 0,
+      "open": 1090.0,
+      "high": 1090.0,
+      "low": 1090.0,
       "indicators": {
         "sma7": 1194.29,
         "sma20": 1161.1,
@@ -47,7 +47,7 @@
         "low52": 865.0
       },
       "alerts": [],
-      "updated_at": "2026-10-17"
+      "updated_at": "2026-10-18"
     }
   ]
 }
