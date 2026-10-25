@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-25",
+  "stocks": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 2385.0,
+      "change": -35.0,
+      "change_pct": -1.45,
+      "volume": 22651,
+      "open": 2435.0,
+      "high": 2435.0,
+      "low": 2385.0,
+      "indicators": {
+        "sma7": 2425.71,
+        "sma20": 2485.25,
+        "ema12": 2448.66,
+        "ema26": 2458.3,
+        "rsi14": 30.77,
+        "high52": 2585.0,
+        "low52": 2320.0
+      },
+      "alerts": [],
+      "updated_at": "2026-10-25"
+    },
+    {
+      "symbol": "3037",
+      "name": "欣興",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 1085.0,
+      "change": -15.0,
+      "change_pct": -1.36,
+      "volume": 20472,
+      "open": 1160.0,
+      "high": 1180.0,
+      "low": 1065.0,
+      "indicators": {
+        "sma7": 1101.43,
+        "sma20": 1184.0,
+        "ema12": 1132.67,
+        "ema26": 1126.29,
+        "rsi14": 37.96,
+        "high52": 1325.0,
+        "low52": 865.0
+      },
+      "alerts": [],
+      "updated_at": "2026-10-25"
+    }
+  ]
+}
