@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-25",
+  "date": "2026-10-27",
   "stocks": [
     {
       "symbol": "2330",
@@ -9,9 +9,9 @@
       "price": 2385.0,
       "change": -35.0,
       "change_pct": -1.45,
-      "volume": 22651,
-      "open": 2435.0,
-      "high": 2435.0,
+      "volume": 0,
+      "open": 2385.0,
+      "high": 2385.0,
       "low": 2385.0,
       "indicators": {
         "sma7": 2425.71,
@@ -23,7 +23,7 @@
         "low52": 2320.0
       },
       "alerts": [],
-      "updated_at": "2026-10-25"
+      "updated_at": "2026-10-27"
     },
     {
       "symbol": "3037",
@@ -33,10 +33,10 @@
       "price": 1085.0,
       "change": -15.0,
       "change_pct": -1.36,
-      "volume": 20472,
-      "open": 1160.0,
-      "high": 1180.0,
-      "low": 1065.0,
+      "volume": 0,
+      "open": 1085.0,
+      "high": 1085.0,
+      "low": 1085.0,
       "indicators": {
         "sma7": 1101.43,
         "sma20": 1184.0,
@@ -47,7 +47,7 @@
         "low52": 865.0
       },
       "alerts": [],
-      "updated_at": "2026-10-25"
+      "updated_at": "2026-10-27"
     }
   ]
 }
