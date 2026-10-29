@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-29",
+  "stocks": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 2425.0,
+      "change": 25.0,
+      "change_pct": 1.04,
+      "volume": 0,
+      "open": 2425.0,
+      "high": 2425.0,
+      "low": 2425.0,
+      "indicators": {
+        "sma7": 2410.71,
+        "sma20": 2478.5,
+        "ema12": 2438.69,
+        "ema26": 2451.84,
+        "rsi14": 23.21,
+        "high52": 2585.0,
+        "low52": 2320.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 2330 (台積電) RSI=23.2，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-29"
+    },
+    {
+      "symbol": "3037",
+      "name": "欣興",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 1100.0,
+      "change": 40.0,
+      "change_pct": 3.77,
+      "volume": 0,
+      "open": 1100.0,
+      "high": 1100.0,
+      "low": 1100.0,
+      "indicators": {
+        "sma7": 1087.14,
+        "sma20": 1178.0,
+        "ema12": 1118.18,
+        "ema26": 1119.8,
+        "rsi14": 27.27,
+        "high52": 1325.0,
+        "low52": 865.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 3037 (欣興) RSI=27.3，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-29"
+    }
+  ]
+}
