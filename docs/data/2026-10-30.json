@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-30",
+  "stocks": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 2415.0,
+      "change": -10.0,
+      "change_pct": -0.41,
+      "volume": 0,
+      "open": 2415.0,
+      "high": 2415.0,
+      "low": 2415.0,
+      "indicators": {
+        "sma7": 2410.0,
+        "sma20": 2475.5,
+        "ema12": 2435.04,
+        "ema26": 2449.11,
+        "rsi14": 19.64,
+        "high52": 2585.0,
+        "low52": 2320.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 2330 (台積電) RSI=19.6，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-30"
+    },
+    {
+      "symbol": "3037",
+      "name": "欣興",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 1040.0,
+      "change": -60.0,
+      "change_pct": -5.45,
+      "volume": 0,
+      "open": 1040.0,
+      "high": 1040.0,
+      "low": 1040.0,
+      "indicators": {
+        "sma7": 1080.0,
+        "sma20": 1170.75,
+        "ema12": 1106.15,
+        "ema26": 1113.89,
+        "rsi14": 25.0,
+        "high52": 1325.0,
+        "low52": 865.0
+      },
+      "alerts": [
+        {
+          "type": "price_surge",
+          "msg": "💥 急跌 3037 (欣興) 單日 -5.45%，現價 1040.0"
+        },
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 3037 (欣興) RSI=25.0，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-30"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "market": "US",
+      "currency": "USD",
+      "price": NaN,
+      "change": NaN,
+      "change_pct": NaN,
+      "volume": 75456091,
+      "open": NaN,
+      "high": NaN,
+      "low": NaN,
+      "indicators": {
+        "sma7": null,
+        "sma20": null,
+        "ema12": 218.22,
+        "ema26": 220.88,
+        "rsi14": 35.01,
+        "high52": 239.24,
+        "low52": 164.79
+      },
+      "alerts": [],
+      "updated_at": "2026-10-30"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "market": "US",
+      "currency": "USD",
+      "price": NaN,
+      "change": NaN,
+      "change_pct": NaN,
+      "volume": 22375524,
+      "open": NaN,
+      "high": NaN,
+      "low": NaN,
+      "indicators": {
+        "sma7": null,
+        "sma20": null,
+        "ema12": 383.92,
+        "ema26": 376.21,
+        "rsi14": 62.16,
+        "high52": 489.88,
+        "low52": 298.32
+      },
+      "alerts": [],
+      "updated_at": "2026-10-30"
+    }
+  ]
+}
