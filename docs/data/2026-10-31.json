@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-31",
+  "stocks": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 2370.0,
+      "change": -45.0,
+      "change_pct": -1.86,
+      "volume": 29562,
+      "open": 2380.0,
+      "high": 2380.0,
+      "low": 2360.0,
+      "indicators": {
+        "sma7": 2402.86,
+        "sma20": 2470.25,
+        "ema12": 2425.04,
+        "ema26": 2443.25,
+        "rsi14": 16.92,
+        "high52": 2585.0,
+        "low52": 2320.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 2330 (台積電) RSI=16.9，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-31"
+    },
+    {
+      "symbol": "3037",
+      "name": "欣興",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 989.0,
+      "change": -51.0,
+      "change_pct": -4.9,
+      "volume": 19687,
+      "open": 965.0,
+      "high": 1005.0,
+      "low": 959.0,
+      "indicators": {
+        "sma7": 1061.29,
+        "sma20": 1161.95,
+        "ema12": 1088.13,
+        "ema26": 1104.64,
+        "rsi14": 23.04,
+        "high52": 1325.0,
+        "low52": 865.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 3037 (欣興) RSI=23.0，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-10-31"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "market": "US",
+      "currency": "USD",
+      "price": 204.64,
+      "change": -9.02,
+      "change_pct": -4.22,
+      "volume": 168039400,
+      "open": 208.94,
+      "high": 209.06,
+      "low": 200.92,
+      "indicators": {
+        "sma7": 212.97,
+        "sma20": 221.46,
+        "ema12": 215.54,
+        "ema26": 219.18,
+        "rsi14": 30.97,
+        "high52": 239.24,
+        "low52": 164.79
+      },
+      "alerts": [],
+      "updated_at": "2026-10-31"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "market": "US",
+      "currency": "USD",
+      "price": 399.81,
+      "change": -3.49,
+      "change_pct": -0.87,
+      "volume": 41644400,
+      "open": 393.22,
+      "high": 404.22,
+      "low": 387.52,
+      "indicators": {
+        "sma7": 393.32,
+        "sma20": 380.7,
+        "ema12": 388.89,
+        "ema26": 379.82,
+        "rsi14": 59.71,
+        "high52": 489.88,
+        "low52": 298.32
+      },
+      "alerts": [],
+      "updated_at": "2026-10-31"
+    }
+  ]
+}
