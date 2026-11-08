@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-08",
+  "stocks": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 2135.0,
+      "change": -105.0,
+      "change_pct": -4.69,
+      "volume": 0,
+      "open": 2135.0,
+      "high": 2135.0,
+      "low": 2135.0,
+      "indicators": {
+        "sma7": 2292.14,
+        "sma20": 2400.75,
+        "ema12": 2318.56,
+        "ema26": 2381.64,
+        "rsi14": 13.25,
+        "high52": 2585.0,
+        "low52": 2135.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 2330 (台積電) RSI=13.2，留意反彈機會"
+        },
+        {
+          "type": "low52",
+          "msg": "⚠️ 52週新低 2330 (台積電) 現價 2135.0 跌破年低 2135.0"
+        }
+      ],
+      "updated_at": "2026-11-08"
+    },
+    {
+      "symbol": "3037",
+      "name": "欣興",
+      "market": "TW",
+      "currency": "TWD",
+      "price": 720.0,
+      "change": -7.0,
+      "change_pct": -0.96,
+      "volume": 88,
+      "open": 720.0,
+      "high": 720.0,
+      "low": 720.0,
+      "indicators": {
+        "sma7": 906.14,
+        "sma20": 1061.15,
+        "ema12": 948.41,
+        "ema26": 1022.24,
+        "rsi14": 22.12,
+        "high52": 1325.0,
+        "low52": 727.0
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 3037 (欣興) RSI=22.1，留意反彈機會"
+        },
+        {
+          "type": "low52",
+          "msg": "⚠️ 52週新低 3037 (欣興) 現價 720.0 跌破年低 727.0"
+        }
+      ],
+      "updated_at": "2026-11-08"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "market": "US",
+      "currency": "USD",
+      "price": 186.64,
+      "change": 5.04,
+      "change_pct": 2.78,
+      "volume": 179722400,
+      "open": 191.1,
+      "high": 194.9,
+      "low": 185.22,
+      "indicators": {
+        "sma7": 199.35,
+        "sma20": 211.55,
+        "ema12": 203.09,
+        "ema26": 211.32,
+        "rsi14": 29.63,
+        "high52": 239.24,
+        "low52": 164.79
+      },
+      "alerts": [
+        {
+          "type": "rsi_oversold",
+          "msg": "📉 超賣訊號 NVDA (NVIDIA) RSI=29.6，留意反彈機會"
+        }
+      ],
+      "updated_at": "2026-11-08"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "market": "US",
+      "currency": "USD",
+      "price": 358.22,
+      "change": 14.53,
+      "change_pct": 4.23,
+      "volume": 36642300,
+      "open": 348.92,
+      "high": 363.84,
+      "low": 347.6,
+      "indicators": {
+        "sma7": 384.65,
+        "sma20": 380.42,
+        "ema12": 379.95,
+        "ema26": 378.49,
+        "rsi14": 46.81,
+        "high52": 489.88,
+        "low52": 298.32
+      },
+      "alerts": [],
+      "updated_at": "2026-11-08"
+    }
+  ]
+}
