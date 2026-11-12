@@ -1,62 +1,53 @@
 {
-  "date": "2026-11-11",
+  "date": "2026-11-12",
   "stocks": [
     {
       "symbol": "2330",
       "name": "台積電",
       "market": "TW",
       "currency": "TWD",
-      "price": 2285.0,
-      "change": 50.0,
-      "change_pct": 2.24,
+      "price": 2395.0,
+      "change": 110.0,
+      "change_pct": 4.81,
       "volume": 0,
-      "open": 2285.0,
-      "high": 2285.0,
-      "low": 2285.0,
+      "open": 2395.0,
+      "high": 2395.0,
+      "low": 2395.0,
       "indicators": {
-        "sma7": 2254.29,
-        "sma20": 2370.0,
-        "ema12": 2302.52,
-        "ema26": 2364.42,
-        "rsi14": 37.61,
+        "sma7": 2263.57,
+        "sma20": 2362.75,
+        "ema12": 2316.75,
+        "ema26": 2366.69,
+        "rsi14": 49.22,
         "high52": 2585.0,
         "low52": 2135.0
       },
       "alerts": [],
-      "updated_at": "2026-11-11"
+      "updated_at": "2026-11-12"
     },
     {
       "symbol": "3037",
       "name": "欣興",
       "market": "TW",
       "currency": "TWD",
-      "price": 828.0,
-      "change": 71.0,
-      "change_pct": 9.38,
+      "price": 864.0,
+      "change": 36.0,
+      "change_pct": 4.35,
       "volume": 0,
-      "open": 828.0,
-      "high": 828.0,
-      "low": 828.0,
+      "open": 864.0,
+      "high": 864.0,
+      "low": 864.0,
       "indicators": {
-        "sma7": 842.71,
-        "sma20": 1011.65,
-        "ema12": 904.97,
-        "ema26": 989.66,
-        "rsi14": 28.53,
+        "sma7": 823.71,
+        "sma20": 992.1,
+        "ema12": 898.67,
+        "ema26": 980.35,
+        "rsi14": 35.33,
         "high52": 1325.0,
         "low52": 727.0
       },
-      "alerts": [
-        {
-          "type": "price_surge",
-          "msg": "🚀 急漲 3037 (欣興) 單日 +9.38%，現價 828.0"
-        },
-        {
-          "type": "rsi_oversold",
-          "msg": "📉 超賣訊號 3037 (欣興) RSI=28.5，留意反彈機會"
-        }
-      ],
-      "updated_at": "2026-11-11"
+      "alerts": [],
+      "updated_at": "2026-11-12"
     }
   ]
 }
